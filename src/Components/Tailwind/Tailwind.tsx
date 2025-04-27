@@ -1,44 +1,52 @@
-import ITailwindContainer from "./ProfileCard/i-tailwind-container";
-import ProfileCard from "./ProfileCard/ProfileCard";
-import { useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import axios from "axios";
+import ProfileCard from "./ProfileCard/ProfileCard";
+import ITailwindContainer from "./ProfileCard/i-tailwind-container";
 
+export default function TailWind() {
+    const location = useLocation();
+    const { username } = location.state || {};
 
-export default function Tailwind() {
-    const location = useLocation()
-    const {username} = location.state || {}
-    console.log(username.username)
-    const [profile, setProfile] = useState({})
+    const [profileData, setProfileData] = useState<ITailwindContainer | null>(null);
 
-    let profileResponse = ""
+    useEffect(() => {
+        if (username) {
+            fetchProfile(username);
+        }
+    }, [username]);
 
-    const fetchProfile = axios.get(`https://api.github.com/users/${username.username}`)
-                                 .then((response) => profileResponse = response.data)
-                                 .catch((e) => {
-                                    console.log(e)
-                                    alert(`Ocorreu o seguinte erro: ${e}`)
-                                 })
-    
-    if (profileResponse != null) {
-        setProfile({
-            avatar : axios.get(profileResponse.avatar_url)
-        })
-    }
+    const fetchProfile = async (username: string) => {
+        try {
+            const userResponse = await axios.get(`https://api.github.com/users/${username.username}`);
+            const userData = userResponse.data;
 
-    const profileData : ITailwindContainer = {
-        profilePicture : "",
-        username : "Marcelolinho",
-        biography : "adsadasdafdfdsggdsvlkç mvjlvn",
-        profileUrl : "url",
-        repositories : "abluble"
+            const avatarResponse = await axios.get(userData.avatar_url, { responseType: 'blob' });
+            const avatarBlobUrl = URL.createObjectURL(avatarResponse.data);
+
+            const profile: ITailwindContainer = {
+                profilePicture: avatarBlobUrl,
+                username: userData.login,
+                biography: userData.bio,
+                profileUrl: userData.html_url,
+                repositories: userData.public_repos,
+            };
+
+            setProfileData(profile);
+
+        } catch (e) {
+            console.error("Erro ao buscar perfil:", e);
+            alert(`Ocorreu o seguinte erro: ${e}`);
+        }
+    };
+
+    if (!profileData) {
+        return <div>Carregando perfil...</div>;
     }
 
     return (
-        <div className="flex justify-center items-center min-h-screen">
-            <div className="" id="login-container">
-               <ProfileCard data={profileData} />
-            </div>
+        <div className="flex flex-col items-center">
+            <ProfileCard data={profileData} />
         </div>
-    )
+    );
 }

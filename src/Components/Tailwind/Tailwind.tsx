@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
-import ProfileCard from "./ProfileCard/ProfileCard";
-import ITailwindContainer from "./ProfileCard/i-tailwind-container";
+import ProfileComponent from "./ProfileCard/ProfileCard";
+import IStyledContainer from "./ProfileCard/i-tailwind-container";
 
-export default function TailWind() {
+export default function StyledComponent() {
     const location = useLocation();
     const { username } = location.state || {};
 
-    const [profileData, setProfileData] = useState<ITailwindContainer | null>(null);
+    const [profileData, setProfileData] = useState<IStyledContainer | null>(null);
 
     useEffect(() => {
         if (username) {
@@ -24,7 +24,7 @@ export default function TailWind() {
             const avatarResponse = await axios.get(userData.avatar_url, { responseType: 'blob' });
             const avatarBlobUrl = URL.createObjectURL(avatarResponse.data);
 
-            const profile: ITailwindContainer = {
+            const profile: IStyledContainer = {
                 profilePicture: avatarBlobUrl,
                 username: userData.login,
                 biography: userData.bio,
@@ -45,8 +45,8 @@ export default function TailWind() {
     }
 
     return (
-        <div className="flex flex-col items-center">
-            <ProfileCard data={profileData} />
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <ProfileComponent data={profileData} />
         </div>
     );
 }

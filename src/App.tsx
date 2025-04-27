@@ -22,7 +22,7 @@ function Main() {
           }} />
           <div className="flex justify-around mt-3" id="options">
             <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => navigate("/tailwind", { state: { username: {username} } })}>Tailwind</button>
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => navigate("/styledComponent")}>Styled Component</button>
+            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => navigate("/styledComponent", { state: { username: {username} } })}>Styled Component</button>
           </div>
         </div>
       </div>
